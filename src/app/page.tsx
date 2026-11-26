@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-const menu = [{ label: "Beranda", href: "/" }];
+const menu = [
+  { label: "Beranda", href: "/" },
+  { label: "Manajemen Tim", href: "/manajemen-tim" },
+];
 
 export default function Home() {
   return (
@@ -65,3 +68,4 @@ export default function Home() {
     </div>
   );
 }
+
