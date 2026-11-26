@@ -47,6 +47,48 @@
       font-size: 0.875rem;
       color: #94a3b8;
     }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .countdown > div {
+      background: rgba(148, 163, 184, 0.1);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px 8px;
+    }
+
+    .countdown .value {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .countdown .label {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status {
+      min-height: 1.5em;
+      margin-bottom: 20px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 480px) {
+      .countdown { gap: 8px; }
+      .countdown .value { font-size: 1.35rem; }
+    }
   </style>
 </head>
 <body>
@@ -57,7 +99,62 @@
       Situs ini sedang dalam perbaikan. Kami akan segera kembali.
       Terima kasih atas kesabaran Anda.
     </p>
+
+    <div class="countdown" role="timer" aria-label="Waktu tersisa">
+      <div><span class="value" id="days">00</span><span class="label">Hari</span></div>
+      <div><span class="value" id="hours">00</span><span class="label">Jam</span></div>
+      <div><span class="value" id="minutes">00</span><span class="label">Menit</span></div>
+      <div><span class="value" id="seconds">00</span><span class="label">Detik</span></div>
+    </div>
+
+    <p class="status" id="status" aria-live="polite"></p>
     <span class="badge">Harap kembali beberapa saat lagi</span>
   </main>
+
+  <script>
+    // Ubah tanggal ini sesuai estimasi selesai maintenance (Waktu Indonesia Barat).
+    const TARGET_DATE = new Date("2026-12-01T09:00:00+07:00");
+
+    const el = {
+      days: document.getElementById("days"),
+      hours: document.getElementById("hours"),
+      minutes: document.getElementById("minutes"),
+      seconds: document.getElementById("seconds"),
+      status: document.getElementById("status"),
+    };
+
+    const pad = (n) => String(n).padStart(2, "0");
+    let timer = null;
+
+    function updateCountdown() {
+      const remaining = TARGET_DATE.getTime() - Date.now();
+
+      if (remaining <= 0) {
+        ["days", "hours", "minutes", "seconds"].forEach((key) => {
+          el[key].textContent = "00";
+        });
+        el.status.textContent = "Maintenance selesai. Situs akan segera tersedia.";
+        if (timer) clearInterval(timer);
+        return;
+      }
+
+      const totalSeconds = Math.floor(remaining / 1000);
+      el.days.textContent = pad(Math.floor(totalSeconds / 86400));
+      el.hours.textContent = pad(Math.floor((totalSeconds % 86400) / 3600));
+      el.minutes.textContent = pad(Math.floor((totalSeconds % 3600) / 60));
+      el.seconds.textContent = pad(totalSeconds % 60);
+    }
+
+    el.status.textContent =
+      "Estimasi selesai: " +
+      TARGET_DATE.toLocaleString("id-ID", {
+        dateStyle: "full",
+        timeStyle: "short",
+        timeZone: "Asia/Jakarta",
+      });
+
+    updateCountdown();
+    timer = setInterval(updateCountdown, 1000);
+  </script>
 </body>
 </html>
